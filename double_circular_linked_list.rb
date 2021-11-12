@@ -8,9 +8,9 @@ class DoubleCircularList
 
   attr_accessor :head, :count
 
-  def initialize
-    @head = nil
+  def initialize(input_ary=nil)
     @count = 0
+    input_ary&.each { |element| self << element }
   end
 
   def <<(value)
@@ -26,16 +26,21 @@ class DoubleCircularList
     @head.prev_node
   end
 
-  def [](index)
+  # NB! returns nodes, not just their values
+  def [](index_or_range)
     current = @head
-    (index.abs % @count).times do
-      current = if index.positive?
-                  current.next_node
-                else
-                  current.prev_node
-                end
+    case index_or_range
+    when Integer
+      traverse_to_node(index_or_range, current)
+    when Range
+      result = []
+      current = traverse_to_node(index_or_range.begin, current)
+      last_node_index = index_or_range.end - (index_or_range.exclude_end? ? 2 : 1)
+      traverse_to_node(last_node_index, current) { |node| result << node }
+      result
+    else
+      raise TypeError, "expected an Integer or a Range, got #{index_or_range.class}"
     end
-    current.value
   end
 
   def each
@@ -44,5 +49,14 @@ class DoubleCircularList
       yield current
       current = current.next_node
     end
+  end
+  
+  def traverse_to_node(index, current)
+    index.abs.times do
+      yield current if block_given?
+      current = index.positive? ? current.next_node : current.prev_node
+    end
+    yield current if block_given?
+    current
   end
 end
