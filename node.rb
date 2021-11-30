@@ -15,7 +15,7 @@ class Node
   # ==== Options
   #
   # * +:prev_node+ - previous node of the list, if not given, points to itself
-  # * +:value+ - a value of a node, default - nil
+  # * +:value+ - a value of a node, default - +nil+
   # * +:next_node+ - next node of the list, if not given, points to itself
   def initialize(prev_node: nil, value: nil, next_node: nil)
     @value = value

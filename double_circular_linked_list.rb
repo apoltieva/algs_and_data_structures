@@ -2,18 +2,32 @@
 
 require_relative 'node'
 
-# Ruby realization of a double circular linked list which contains objects of class Node.
+# Ruby realization of a double circular linked list which contains objects of class <tt>@Node</tt>.
 class DoubleCircularList
   include Enumerable
 
-  attr_accessor :head, :size
+  # The first node of a list. Points to +nil+ if list is empty.
+  attr_accessor :head
+
+  # The size of the list.
+  attr_accessor :size
   alias length size
 
+  # Creates a new list.
+  # === Options
+  #
+  # * +:input_ary+ - any iterable with #each that is used to populate the list with values.
+  #   Default is +nil+.
   def initialize(input_ary = nil)
     @size = 0
     input_ary&.each { |element| self << element }
   end
 
+  # Creates a new node with the given value at the end of the list.
+  #
+  # === Attributes
+  #
+  # * +value+ - an object that will be stored in the list.
   def <<(value)
     if @head
       prev_node = @head.prev_node
@@ -27,6 +41,9 @@ class DoubleCircularList
     @head.prev_node
   end
 
+  # If integer is given, returns a *node* with the index equal to the int. If range is given, returns an Array which is
+  # the slice of the list with indeces of the given range.
+  #
   # NB! returns nodes, not just their values
   def [](index_or_range)
     current = @head
@@ -44,6 +61,7 @@ class DoubleCircularList
     end
   end
 
+  # Same as Array#each
   def each
     current = @head
     @size.times do
@@ -52,6 +70,7 @@ class DoubleCircularList
     end
   end
 
+  # Same as Array#delete_at
   def delete_at(index)
     if @size.zero?
       nil
@@ -60,6 +79,11 @@ class DoubleCircularList
     end
   end
 
+  # Deletes the first node that has the value of +value+.
+  # If block is given, returns its value, else +nil+.
+  #
+  # === Attributes
+  # * +value+ - the value of the node to be deleted.
   def delete(value)
     current = @head
     while current.value != value
@@ -75,8 +99,11 @@ class DoubleCircularList
     remove_node current
   end
 
+  # Removes the node from the list.
+  # === Attributes
+  # * +node+ - the node to remove
   def remove_node(node)
-    raise TypeError, "expected an Integer or a Range, got #{node.class}" unless node.is_a? Node
+    raise TypeError, "expected a Node, got #{node.class}" unless node.is_a? Node
 
     if @size == 1
       @size = 0
@@ -90,6 +117,17 @@ class DoubleCircularList
     end
   end
 
+  # Goes through the list from +current+ node to the DoubleCircularList \[+index+\] node, executing block if given.
+  # === Attributes
+  # * +index+ - the index of the destination node (can be more than the size of the list, positive or negative)
+  # * +current+ - the starting node
+  # * +:as_many_as_said+ - if false, traversing goes _n_ times where _n_ is the index of the resulting node.
+  #   Else goes through the list exactly +index+ times.
+  #
+  #   === Example
+  #     list = DoubleCircularList.new [0, 1, 2]
+  #     node = list.traverse_to_node(5, list.head) {|node| puts node.value} # prints 0 1 2 and returns 2
+  #     node = list.traverse_to_node(5, list.head, as_many_as_said: true) {|node| puts node.value} # prints 0 1 2 0 1 2 and returns 2
   def traverse_to_node(index, current, as_many_as_said: false)
     return nil if @size.zero?
 
