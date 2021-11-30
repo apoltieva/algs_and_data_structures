@@ -2,14 +2,15 @@
 
 require_relative 'node'
 
-# Ruby realization of a double circular linked list.
+# Ruby realization of a double circular linked list which contains objects of class Node.
 class DoubleCircularList
   include Enumerable
 
-  attr_accessor :head, :count
+  attr_accessor :head, :size
+  alias length size
 
   def initialize(input_ary = nil)
-    @count = 0
+    @size = 0
     input_ary&.each { |element| self << element }
   end
 
@@ -22,7 +23,7 @@ class DoubleCircularList
     else
       @head = Node.new(value: value)
     end
-    @count += 1
+    @size += 1
     @head.prev_node
   end
 
@@ -45,14 +46,14 @@ class DoubleCircularList
 
   def each
     current = @head
-    @count.times do
+    @size.times do
       yield current
       current = current.next_node
     end
   end
 
   def delete_at(index)
-    if @count.zero?
+    if @size.zero?
       nil
     else
       remove_node traverse_to_node(Integer(index), @head)
@@ -77,22 +78,22 @@ class DoubleCircularList
   def remove_node(node)
     raise TypeError, "expected an Integer or a Range, got #{node.class}" unless node.is_a? Node
 
-    if @count == 1
-      @count = 0
+    if @size == 1
+      @size = 0
       @head = nil
     else
       @head = node.next_node if node == @head
       node.prev_node.next_node = node.next_node
       node.next_node.prev_node = node.prev_node
-      @count -= 1
+      @size -= 1
       node
     end
   end
 
   def traverse_to_node(index, current, as_many_as_said: false)
-    return nil if @count.zero?
+    return nil if @size.zero?
 
-    (as_many_as_said ? index.abs : index.abs % @count).times do
+    (as_many_as_said ? index.abs : index.abs % @size).times do
       yield current if block_given?
       current = index.positive? ? current.next_node : current.prev_node
     end
