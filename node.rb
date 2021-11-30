@@ -1,11 +1,22 @@
 # frozen_string_literal: true
 
-# Represents a node used in double circular linked list.
-# Has a value and 2 pointers - for the previous node in a linked list and for the next one.
-# If previous and next node are not given, it points to itself, creating a cyclic object.
+# Represents a node of a double circular linked list.
 class Node
-  attr_accessor :prev_node, :value, :next_node
 
+  # the value of a node - anything you want to store in a list
+  attr_accessor :value
+
+  # the node which points to this node
+  attr_accessor :prev_node
+
+  # the pointer to the next node
+  attr_accessor :next_node
+
+  # ==== Options
+  #
+  # * +:prev_node+ - previous node of the list, if not given, points to itself
+  # * +:value+ - a value of a node, default - nil
+  # * +:next_node+ - next node of the list, if not given, points to itself
   def initialize(prev_node: nil, value: nil, next_node: nil)
     @value = value
     @prev_node = prev_node || self
