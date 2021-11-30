@@ -51,7 +51,32 @@ class DoubleCircularList
     end
   end
 
+  def delete_at(index)
+    if @count.zero?
+      nil
+    else
+      remove_node traverse_to_node(Integer(index), @head)
+    end
+  end
+
+  def delete(value)
+    current = @head
+    while current.value != value
+      current = current.next_node
+      if current == @head
+        if block_given?
+          return yield
+        else
+          return nil
+        end
+      end
+    end
+    remove_node current
+  end
+
   def remove_node(node)
+    raise TypeError, "expected an Integer or a Range, got #{node.class}" unless node.is_a? Node
+
     if @count == 1
       @count = 0
       @head = nil
@@ -65,6 +90,8 @@ class DoubleCircularList
   end
 
   def traverse_to_node(index, current, as_many_as_said: false)
+    return nil if @count.zero?
+
     (as_many_as_said ? index.abs : index.abs % @count).times do
       yield current if block_given?
       current = index.positive? ? current.next_node : current.prev_node
